@@ -1,4 +1,4 @@
-# University Chat Scraper Backend
+# Whatsapp Chat Intelligence
 
 A FastAPI backend for ingesting, searching, and extracting structured data from WhatsApp chat exports. Features deduplication, full-text search, and entity extraction for items and apartments.
 
