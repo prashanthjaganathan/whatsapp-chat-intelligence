@@ -1,0 +1,20 @@
+{
+  "name": "university-whatsapp-scraper",
+  "version": "1.0.0",
+  "description": "WhatsApp group chat scraper for university communities",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "scrape": "node src/scrapers/group-scraper.js",
+    "monitor": "node src/scrapers/message-monitor.js",
+    "process": "node src/processors/message-processor.js"
+  },
+  "dependencies": {
+    "whatsapp-web.js": "^1.23.0",
+    "qrcode-terminal": "^0.12.0",
+    "fs-extra": "^11.2.0",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3"
+  }
+}

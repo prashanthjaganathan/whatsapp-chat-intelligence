@@ -417,6 +417,12 @@ outputs/
 data/
 datasets/
 
+# WhatsApp Web.js session files and browser data
+scraper/.wwebjs_auth/
+scraper/.wwebjs_cache/
+scraper/sessions/
+scraper/*.session.json
+
 # API keys and secrets
 .env.local
 .env.production
