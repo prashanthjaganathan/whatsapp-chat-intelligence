@@ -6,12 +6,6 @@
   "routes": [
     { "src": "/(.*)", "dest": "api/index.py" }
   ],
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.11",
-      "maxDuration": 60
-    }
-  },
   "env": {
     "API_V1_STR": "/api/v1",
     "PROJECT_NAME": "University Chat Manager"
