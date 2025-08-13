@@ -7,14 +7,20 @@ from .db.base import Base, engine
 from .db.search_index import ensure_postgres_full_text_search
 from .api import items, apartments, search, ingest, process, bot, export
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-# Ensure search index
-try:
-    ensure_postgres_full_text_search(engine)
-except Exception as e:
-    # Non-fatal during first boot/migrations
-    print(f"Search index init warning: {e}")
+# Defer DB initialization to application startup to avoid import-time failures
+def _init_db():
+    try:
+        # Create database tables
+        Base.metadata.create_all(bind=engine)
+        # Ensure search index
+        try:
+            ensure_postgres_full_text_search(engine)
+        except Exception as e:
+            # Non-fatal during first boot/migrations
+            print(f"Search index init warning: {e}")
+    except Exception as e:
+        # Avoid crashing the app on environments without DB (e.g., Vercel without managed DB yet)
+        print(f"Database init warning: {e}")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -22,6 +28,11 @@ app = FastAPI(
     description="University Group Chat Data Management API",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
+
+# Run DB initialization on startup (keeps Docker behavior, avoids import-time connect)
+@app.on_event("startup")
+async def on_startup():
+    _init_db()
 
 # Set up CORS
 app.add_middleware(
