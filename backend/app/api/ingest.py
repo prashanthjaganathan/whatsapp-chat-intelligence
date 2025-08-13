@@ -33,7 +33,10 @@ async def ingest_chat_export(
     from ..services.chat_export_parser import parse_chat_export, compute_content_hash
     
     # Parse with since filter - filtering happens in parser now
-    parsed = parse_chat_export(iter(text.splitlines(True)), since=since_dt)
+    try:
+        parsed = parse_chat_export(iter(text.splitlines(True)), since=since_dt)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to parse export: {e}")
     
     service = ChatIngestService(db)
     inserted = 0
@@ -164,5 +167,9 @@ async def ingest_chat_export(
         seen_in_batch.add(mid)
         seen_group_content_in_batch.add(group_content_key)
     
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        # Surface DB errors clearly (e.g., connection, permissions)
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")
     return {"group": group.group_name, "inserted": inserted, "skipped": skipped}

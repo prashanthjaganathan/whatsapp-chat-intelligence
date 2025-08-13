@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine
 
@@ -52,6 +53,11 @@ app.include_router(process.router, prefix=f"{settings.API_V1_STR}/process", tags
 app.include_router(bot.router, prefix=f"{settings.API_V1_STR}/bot", tags=["bot"])
 app.include_router(export.router, prefix=f"{settings.API_V1_STR}/export", tags=["export"])
 
+# Also expose DB ping under the API prefix to avoid 404 when only prefixed routes are used
+@app.get(f"{settings.API_V1_STR}/db/ping")
+async def db_ping_prefixed():
+    return await db_ping()
+
 @app.get("/")
 async def root():
     return {
@@ -63,3 +69,20 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "timestamp": "2024-01-01T00:00:00Z"}
+
+@app.get("/db/ping")
+async def db_ping():
+    try:
+        with engine.connect() as conn:
+            ver = conn.execute(text("select version()"))
+            version = ver.scalar() or "unknown"
+        url = engine.url
+        safe = {
+            "driver": url.drivername,
+            "host": url.host,
+            "port": url.port,
+            "database": url.database,
+        }
+        return {"ok": True, "db": safe, "version": version}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
