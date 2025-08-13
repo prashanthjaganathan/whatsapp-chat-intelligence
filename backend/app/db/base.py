@@ -18,7 +18,7 @@ if url_obj.drivername.startswith("postgresql"):
 engine = create_engine(
     db_url,
     pool_pre_ping=True,
-    connect_args=connect_args or None,
+    connect_args=connect_args,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
