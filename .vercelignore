@@ -1,0 +1,13 @@
+# Keep local-only files out of Vercel deployment
+.env
+.env.*
+Dockerfile
+Dockerfile.*
+docker/
+.scraper-session*
+node_modules/
+scraper/
+**/*.log
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
